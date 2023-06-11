@@ -3,7 +3,7 @@ The main file of our application.
 It's the starting point to run the app on CLI.
 """
 
-from src.cli.cli import run_app
+from src.cli import cli
 
 
-run_app()
+cli.run_app()
