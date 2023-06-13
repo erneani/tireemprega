@@ -8,6 +8,7 @@ import csv
 import os
 import openai
 
+from ast import literal_eval
 from dotenv import load_dotenv
 from src.processor.prompts import PROMPT_MAPPING
 
@@ -21,7 +22,14 @@ def match_user_course(user_data):
     user_tech_information = process_user_data(user_data)
     courses_list = load_csv_database()
 
-    return 'Match'
+    filtered_courses = []
+
+    for skill in literal_eval(user_tech_information['interested_skills']):
+        for course in courses_list:
+            if skill in course['title'] and course['rating'] > 0.76:
+                filtered_courses.append(course)
+
+    return filtered_courses
 
 
 def process_user_data(user_data):
@@ -44,7 +52,14 @@ def load_csv_database():
     with open('datasets/tech-courses-modified.csv', 'r') as courses_file:
         courses_reader_spam = csv.reader(courses_file)
         courses_list = list(courses_reader_spam)
+        courses_list = courses_list[1:]
+        useful_courses_list = []
 
-        print(courses_list)
+        for course in courses_list:
+            useful_courses_list.append({
+                "title": course[1],
+                "url": course[2],
+                "rating": 0 if course[6] == '' else float(course[6])
+            })
 
-        return courses_list
+        return useful_courses_list

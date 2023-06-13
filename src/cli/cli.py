@@ -28,7 +28,7 @@ def beautiful_cli_name():
 
 def show_match_result(user_data, match):
     """Returns a beautiful message with the Match Course"""
-    print(f"Hey {user_data.name}, that's nice! Seems like the course {match.course.title} will be the perfect match for you!")
+    print(f"Hey {user_data['name']}, that's nice! Seems like the course {match[0]['title']} will be the perfect match for you! \nCheck out this URL {match[0]['url']} to learn!")
 
 
 def run_app():
