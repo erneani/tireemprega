@@ -17,6 +17,30 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_SECRET_KEY')
 
 
+def score_course(user_interests, course):
+    score = 0.0
+
+    matching_keywords = user_interests.intersection(course['keywords'])
+    score += len(matching_keywords)
+
+    score += course['rating']
+
+    return score
+
+
+def updated_match_user_course(user_data, top_n=5):
+    user_tech_information = process_user_data(user_data)
+    user_interests = extract_keywords(user_tech_information['interested_skills'] + " " + user_tech_information['interest_area'])
+
+    courses = load_csv_database_with_keywords()
+
+    scored_courses = [{"course": course, "score": score_course(user_interests, course)} for course in courses]
+
+    top_courses = sorted(scored_courses, key=lambda x: x['score'], reverse=True)[:top_n]
+
+    return [course['course'] for course in top_courses]
+
+
 def match_user_course(user_data):
     """Matches the user data with the best course"""
     user_tech_information = process_user_data(user_data)
@@ -63,3 +87,26 @@ def load_csv_database():
             })
 
         return useful_courses_list
+
+
+def extract_keywords(text):
+    return set(text.lower().split())
+
+
+def load_csv_database_with_keywords():
+    csv_path = os.path.join("datasets", "tech-courses-modified.csv")
+
+    courses = []
+
+    with open(csv_path, 'r', encoding="utf-8") as courses_file:
+        courses_reader = csv.reader(courses_file)
+        next(courses_reader)
+
+        for row in courses_reader:
+            title = row[1]
+            url = row[2]
+            rating = 0 if row[6] == '' else float(row[6])
+            keywords = extract_keywords(title)
+            courses.append({"title": title, "url": url, "rating": rating, "keywords": keywords})
+
+    return courses
