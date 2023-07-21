@@ -17,13 +17,30 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_SECRET_KEY')
 
 
-def score_course(user_interests, course):
+def score_course(user_interests, user_data, course):
     score = 0.0
 
     matching_keywords = user_interests.intersection(course['keywords'])
     score += len(matching_keywords)
 
     score += course['rating']
+
+    if user_data['level'].lower() in course['level'].lower():
+        score += 300
+    elif 'all' in course['level'].lower():
+        score += 150
+    else:
+        score -= 300
+
+    if float(course['price']) <= float(user_data['price']):
+        score += 200
+    else:
+        score -= 200
+
+    if float(course['duration']) <= float(user_data['duration']):
+        score += 200
+    else:
+        score -= 200
 
     return score
 
@@ -34,7 +51,7 @@ def updated_match_user_course(user_data, top_n=5):
 
     courses = load_csv_database_with_keywords()
 
-    scored_courses = [{"course": course, "score": score_course(user_interests, course)} for course in courses]
+    scored_courses = [{"course": course, "score": score_course(user_interests, user_data, course)} for course in courses]
 
     top_courses = sorted(scored_courses, key=lambda x: x['score'], reverse=True)[:top_n]
 
@@ -105,8 +122,11 @@ def load_csv_database_with_keywords():
         for row in courses_reader:
             title = row[1]
             url = row[2]
+            price = 0 if row[3] == '' else float(row[3])
+            level = row[5]
+            duration = 0 if row[7] == '' else float(row[7])
             rating = 0 if row[6] == '' else float(row[6])
             keywords = extract_keywords(title)
-            courses.append({"title": title, "url": url, "rating": rating, "keywords": keywords})
+            courses.append({"title": title, "url": url, "rating": rating, "keywords": keywords, "price": price, "level": level, "duration": duration})
 
     return courses

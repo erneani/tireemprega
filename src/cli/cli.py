@@ -40,7 +40,7 @@ def beautiful_cli_name():
 
 def show_match_result(user_data, match):
     """Returns a beautiful message with the Match Course"""
-    print(f"Hey {user_data['name']}, that's nice! Seems like the course {bcolors.OKGREEN}{match[0]['title']}{bcolors.ENDC} will be the perfect match for you! \nCheck out this URL {match[0]['url']} to learn!")
+    print(f"\nHey {user_data['name']}, that's nice! Seems like the course {bcolors.OKGREEN}{match[0]['title']}{bcolors.ENDC} will be the perfect match for you! \nCheck out this URL {match[0]['url']} to learn!")
     print(f"\nHere are some courses that might be a good fit for you:")
     for idx, course in enumerate(match[1:5]):
         print(f"{idx + 1}. {bcolors.WARNING}{course['title']}{bcolors.ENDC}: {course['url']}")

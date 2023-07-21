@@ -4,6 +4,9 @@ QUESTIONS = {
     'name': 'What is your name?',
     'interest_area': 'What is your area of interest?',
     'interested_skills': 'Which skills are you interested in?',
+    'level': 'What course level are you looking for? (Beginner, Intermediate, Expert)',
+    'price': 'How much are you willing to pay for a course? (USD)',
+    'duration': 'How long do you want the course to be? (Hours)',
 }
 
 #    'age': 'What is your age?',
